@@ -1,34 +1,34 @@
 import os
-
 import openai
 from flask import Flask, redirect, render_template, request, url_for
+from speech_recognition import recognize_from_microphone, speak
 
 app = Flask(__name__)
-openai.api_key = os.getenv("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")
+openai.api_key = "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"
 
-@app.route("/", methods=("GET", "POST"))
+dial = []
+
+@app.route("/", methods = ['POST', 'GET'])
 def index():
-    if request.method == "POST":
-        animal = request.form["animal"]
+    global dial
+    if request.method == 'GET':
+        return render_template("index.html", dial=dial)
+    elif request.method == 'POST':
+        question_pose = recognize_from_microphone()
+        dial.append(("Vous", question_pose))
         response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=generate_prompt(animal),
-            temperature=0.6,
+            engine="text-davinci-002", #modèle de l'api
+            prompt=question_pose, #texte qui sera utilisé en contexte
+            temperature=0.7, #contrôle le niveau d'incertitude
+            max_tokens=150, #nbre de mots 
+            n=1, #nbre de réponses à générer
+            stop=None,
+            frequency_penalty=0,
+            presence_penalty=0,
         )
-        return redirect(url_for("index", result=response.choices[0].text))
+        response_text = response.choices[0].text.strip()
+        dial.append(("IA", response_text))
+        return render_template('index.html', dial=dial)
 
-    result = request.args.get("result")
-    return render_template("index.html", result=result)
-
-
-def generate_prompt(animal):
-    return """Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: {}
-Names:""".format(
-        animal.capitalize()
-    )
+if __name__ == '__main__':
+    app.run(debug=True)
