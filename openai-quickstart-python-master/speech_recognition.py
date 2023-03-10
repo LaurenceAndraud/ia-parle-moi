@@ -3,11 +3,11 @@ import azure.cognitiveservices.speech as speechsdk
 import openai
 import pyttsx3
 
-openai.api_key = ("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")
+openai.api_key = ("KEY")
 
 def recognize_from_microphone():
     # This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
-    speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'), region=os.environ.get('SPEECH_REGION'))
+    speech_config = speechsdk.SpeechConfig(subscription=('SPEECH_KEY'), region=('SPEECH_REGION'))
     speech_config.speech_recognition_language="fr-FR"
 
     audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)

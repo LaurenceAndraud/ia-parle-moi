@@ -4,7 +4,9 @@ from flask import Flask, redirect, render_template, request, url_for
 from speech_recognition import recognize_from_microphone, speak
 
 app = Flask(__name__)
-openai.api_key = "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"
+openai.api_key = "KEY"
+app = Flask(__name__, static_url_path='/static')
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = -1
 
 dial = []
 
